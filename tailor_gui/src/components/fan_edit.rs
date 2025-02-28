@@ -519,12 +519,6 @@ impl FanEdit {
                 }
             }
 
-            let safety_fan_speed = temp.saturating_sub(75).saturating_mul(5);
-            if fan < safety_fan_speed {
-                self.drag_into_danger_zone = true;
-                fan = safety_fan_speed;
-            }
-
             self.profile[idx].temp = temp;
             self.profile[idx].fan = fan;
 

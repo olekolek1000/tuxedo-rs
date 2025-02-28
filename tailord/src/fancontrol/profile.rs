@@ -57,34 +57,6 @@ impl FanProfile {
             }
         }
 
-        // Make sure some minimum fan speed is kept:
-        // From 75°C the fan speed should ramp up to
-        // 100% at 95°C.
-        for value in &mut inner {
-            let min_speed = value.temp.saturating_sub(75).saturating_mul(5).min(100);
-
-            if min_speed > value.fan {
-                let invalid_fan_value = value.fan;
-                value.fan = min_speed;
-                tracing::warn!(
-                    "Fan speed {}% at {}°C is too low. Falling back to {min_speed}%: `{file_name:?}`",
-                    invalid_fan_value,
-                    value.temp
-                );
-            }
-        }
-
-        // Make sure that 100% fan speed will be reached
-        if inner.last().unwrap().fan < 100 {
-            tracing::warn!(
-                "Fan speed 100% is never reached. Set speed to 100% at 100°C: `{file_name:?}`"
-            );
-            inner.push(FanProfilePoint {
-                temp: 100,
-                fan: 100,
-            })
-        }
-
         Ok(Self { inner })
     }
 
